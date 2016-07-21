@@ -13,7 +13,7 @@ typedef struct {
 
 static Window *s_main_window;
 static Layer *s_canvas_layer;
-static TextLayer *s_weather_layer;
+static TextLayer *s_weather_icon_layer;
 static TextLayer *s_weathertext_layer;
 static TextLayer *s_date_layer;
 static TextLayer *s_time_layer;
@@ -41,7 +41,7 @@ static bool background_on_conf = false;
 
 static void inbox_received_callback(DictionaryIterator *iterator, void *context) {
   // Store incoming information
-  static char icon_buffer[8];
+  static char icon_buffer[16];
   static char temperature_buffer[8];
   static int temperature;
 
@@ -82,16 +82,16 @@ static void inbox_received_callback(DictionaryIterator *iterator, void *context)
       snprintf(temperature_buffer, sizeof(temperature_buffer), "%d C", temperature);
     }
     
-    snprintf(icon_buffer, sizeof(icon_buffer), "%s", icon_tuple->value->cstring);
+    snprintf(icon_buffer, sizeof(icon_buffer), "%s %s", icon_tuple->value->cstring, temperature_buffer);
 
     // Set temp and icon to text layers
-    text_layer_set_text(s_weather_layer, icon_buffer);
-    text_layer_set_text(s_weathertext_layer, temperature_buffer);
+    text_layer_set_text(s_weather_icon_layer, icon_buffer);
+    //text_layer_set_text(s_weathertext_layer, temperature_buffer);
   }
 
   // If weather disabled, clear weather layers
   if ( !weather_on_conf ) {
-    text_layer_set_text(s_weather_layer, "");
+    text_layer_set_text(s_weather_icon_layer, "");
     text_layer_set_text(s_weathertext_layer, "");
   }
 
@@ -238,23 +238,23 @@ static void window_load(Window *window) {
   text_layer_set_text_alignment(s_date_layer, GTextAlignmentCenter);
   
   // Create weather icon Layer
-  s_weather_layer = text_layer_create(
-      GRect(20, PBL_IF_ROUND_ELSE(63, 63), 40, 28));
+  s_weather_icon_layer = text_layer_create(
+      GRect(0, PBL_IF_ROUND_ELSE(63, 63), window_bounds.size.w, 28));
 
   // Style the icon
-  text_layer_set_background_color(s_weather_layer, GColorClear);
-  text_layer_set_text_color(s_weather_layer, GColorBlack);
-  text_layer_set_text_alignment(s_weather_layer, GTextAlignmentRight);
+  text_layer_set_background_color(s_weather_icon_layer, GColorClear);
+  text_layer_set_text_color(s_weather_icon_layer, GColorBlack);
+  text_layer_set_text_alignment(s_weather_icon_layer, GTextAlignmentCenter);
   
   
   // Create temperature Layer
   s_weathertext_layer = text_layer_create(
-      GRect(24, PBL_IF_ROUND_ELSE(63, 63), window_bounds.size.w, 28));
+      GRect(window_bounds.size.w / 2 + 5, PBL_IF_ROUND_ELSE(63, 63), window_bounds.size.w / 2, 28));
 
   // Style the weather text
   text_layer_set_background_color(s_weathertext_layer, GColorClear);
   text_layer_set_text_color(s_weathertext_layer, GColorBlack);
-  text_layer_set_text_alignment(s_weathertext_layer, GTextAlignmentCenter);
+  text_layer_set_text_alignment(s_weathertext_layer, GTextAlignmentLeft);
 
   // Set fonts
   s_time_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_PIXEL_MIL_52)); // FONT_PIXEL_MIL_24
@@ -265,14 +265,14 @@ static void window_load(Window *window) {
   text_layer_set_font(s_minute_layer, s_time_font);
   text_layer_set_font(s_date_layer, s_weather_font);
   text_layer_set_font(s_weathertext_layer, s_weather_font);
-  text_layer_set_font(s_weather_layer, s_weather_font);
+  text_layer_set_font(s_weather_icon_layer, s_weather_font);
 
   // Add layers
   layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_hour_layer));
   layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_minute_layer));
   layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_date_layer));
   layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_weathertext_layer));
-  layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_weather_layer));
+  layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_weather_icon_layer));
 }
 
 static void window_unload(Window *window) {
@@ -281,7 +281,7 @@ static void window_unload(Window *window) {
   text_layer_destroy(s_hour_layer);
   text_layer_destroy(s_minute_layer);
   text_layer_destroy(s_date_layer);
-  text_layer_destroy(s_weather_layer);
+  text_layer_destroy(s_weather_icon_layer);
   text_layer_destroy(s_weathertext_layer);
   fonts_unload_custom_font(s_icon_font);
   fonts_unload_custom_font(s_time_font);
