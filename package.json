@@ -28,6 +28,13 @@
         "resources": {
             "media": [
                 {
+                    "characterRegex": "[0-9:\u00b0a-izA-IZ\\-]",
+                    "file": "fonts/weather_icons.ttf",
+                    "name": "FONT_ICON_24",
+                    "targetPlatforms": null,
+                    "type": "font"
+                },
+                {
                     "file": "fonts/pixelmil",
                     "name": "FONT_PIXEL_MIL_24",
                     "targetPlatforms": null,
@@ -46,13 +53,6 @@
                     "name": "IMAGE_MENU",
                     "targetPlatforms": null,
                     "type": "png"
-                },
-                {
-                    "characterRegex": "[0-9:\u00b0a-izA-IZ\\-]",
-                    "file": "fonts/nupe.ttf",
-                    "name": "FONT_NUPE_23",
-                    "targetPlatforms": null,
-                    "type": "font"
                 }
             ]
         },

@@ -239,7 +239,7 @@ static void window_load(Window *window) {
   
   // Create weather icon Layer
   s_weather_layer = text_layer_create(
-      GRect(20, PBL_IF_ROUND_ELSE(63, 63), 40, 28));
+      GRect(20, PBL_IF_ROUND_ELSE(66, 66), 40, 28));
 
   // Style the icon
   text_layer_set_background_color(s_weather_layer, GColorClear);
@@ -259,13 +259,13 @@ static void window_load(Window *window) {
   // Set fonts
   s_time_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_PIXEL_MIL_52)); // FONT_PIXEL_MIL_24
   s_weather_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_PIXEL_MIL_24));
-  s_icon_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_NUPE_23));
+  s_icon_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_ICON_24));
   
   text_layer_set_font(s_hour_layer, s_time_font);
   text_layer_set_font(s_minute_layer, s_time_font);
   text_layer_set_font(s_date_layer, s_weather_font);
   text_layer_set_font(s_weathertext_layer, s_weather_font);
-  text_layer_set_font(s_weather_layer, s_weather_font);
+  text_layer_set_font(s_weather_layer, s_icon_font);
 
   // Add layers
   layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_hour_layer));
