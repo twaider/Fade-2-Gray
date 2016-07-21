@@ -8,8 +8,8 @@ var messageKeys = require('message_keys');
 
 var myAPIKey = '650dbfc7d1348533fdd7f1ecae2d03ca';
 var ICONS = {
-   "01d": "( )",
-   "02d": "..#",
+   "01d": "{ }",
+   "02d": "#",
    "03d": "##",
    "04d": "###",
    "09d": "//",
