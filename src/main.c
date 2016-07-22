@@ -172,7 +172,7 @@ static void update_proc(Layer *layer, GContext *ctx) {
   GRect bounds = layer_get_bounds(layer);
   GRect block1 = GRect(0, 0, bounds.size.w, 50);
   GRect block2 = GRect(0, 50, bounds.size.w, 50);
-  GRect divider = GRect(bounds.size.w / 2 - 4, 148, 6, 6);
+  GRect divider = GRect(bounds.size.w / 2 - 4, 146, 6, 6);
   GRect battery_bg = GRect(bounds.size.w / 3, 148, bounds.size.w / 3, 50);
 
   graphics_context_set_antialiased(ctx, ANTIALIASING);
@@ -213,6 +213,13 @@ static void update_proc(Layer *layer, GContext *ctx) {
       graphics_context_set_stroke_color(ctx, GColorWhite);
       graphics_fill_rect(ctx, pixel, 0, GCornerNone);
       graphics_draw_rect(ctx, pixel);
+
+      GRect pixel2 = GRect(i, 100, 2, 2);
+
+      graphics_context_set_fill_color(ctx, GColorDarkGray);
+      graphics_context_set_stroke_color(ctx, GColorDarkGray);
+      graphics_fill_rect(ctx, pixel2, 0, GCornerNone);
+      graphics_draw_rect(ctx, pixel2);
     }
   }
 }
@@ -231,9 +238,9 @@ static void window_load(Window *window) {
 
   // Create time Layer
   s_hour_layer = text_layer_create(
-      GRect(0, PBL_IF_ROUND_ELSE(102, 102), window_bounds.size.w / 2 - 5, 55));
+      GRect(0, PBL_IF_ROUND_ELSE(100, 100), window_bounds.size.w / 2 - 5, 55));
   s_minute_layer = text_layer_create(GRect(window_bounds.size.w / 2 + 10,
-                                           PBL_IF_ROUND_ELSE(102, 102),
+                                           PBL_IF_ROUND_ELSE(100, 100),
                                            window_bounds.size.w / 2 - 5, 55));
 
   // Style the time text
@@ -256,7 +263,7 @@ static void window_load(Window *window) {
 
   // Create weather icon Layer
   s_weather_layer = text_layer_create(
-      GRect(0, PBL_IF_ROUND_ELSE(61, 61), window_bounds.size.w, 28));
+      GRect(0, PBL_IF_ROUND_ELSE(60, 60), window_bounds.size.w, 28));
 
   // Style the icon
   text_layer_set_background_color(s_weather_layer, GColorClear);

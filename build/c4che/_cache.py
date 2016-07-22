@@ -19,4 +19,4 @@ REQUESTED_PLATFORMS = [u'aplite', u'basalt', u'chalk']
 RESOURCES_JSON = [{u'type': u'png', u'menuIcon': True, u'targetPlatforms': None, u'name': u'IMAGE_MENU', u'file': u'images/ks_menu.png'}, {u'type': u'font', u'targetPlatforms': None, u'characterRegex': u'[0-9:]', u'name': u'FONT_PIXEL_MIL_52', u'file': u'fonts/pixelmil'}, {u'targetPlatforms': None, u'type': u'font', u'name': u'FONT_PIXEL_MIL_24', u'file': u'fonts/pixelmil'}, {u'type': u'font', u'targetPlatforms': None, u'characterRegex': u'[0-9:\xb0a-izA-IZ\\-]', u'name': u'FONT_NUPE_23', u'file': u'fonts/nupe.ttf'}]
 SUPPORTED_PLATFORMS = ['aplite', 'basalt', 'chalk']
 TARGET_PLATFORMS = ['chalk', 'basalt', 'aplite']
-TIMESTAMP = 1469111278
+TIMESTAMP = 1469171690
