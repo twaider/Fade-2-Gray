@@ -3,6 +3,11 @@
     "dependencies": {
         "pebble-clay": "^1.0.1"
     },
+    "scripts": {
+        "emulator": "pebble build && pebble install --emulator basalt",
+        "config": "pebble emu-app-config",
+        "cloudpebble": "pebble build && pebble install --cloudpebble"
+    },
     "keywords": [
         "pebble-app"
     ],

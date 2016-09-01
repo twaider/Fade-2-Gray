@@ -135,7 +135,7 @@ static void outbox_sent_callback(DictionaryIterator *iterator, void *context) {
 static void tick_handler(struct tm *tick_time, TimeUnits changed) {
   static bool in_interval = true;
 
-  strftime(s_last_date, sizeof(s_last_date), "%a %d", tick_time);
+  strftime(s_last_date, sizeof(s_last_date), "%a %d %b", tick_time);
   strftime(s_last_hour, sizeof(s_last_hour),
            clock_is_24h_style() ? "%H" : "%I:%M", tick_time); // :%M
   strftime(s_last_minute, sizeof(s_last_minute), "%M", tick_time);
@@ -177,6 +177,10 @@ static void update_proc(Layer *layer, GContext *ctx) {
 
   graphics_context_set_antialiased(ctx, ANTIALIASING);
 
+  if (COLORS) {
+    text_layer_set_text_color(s_date_layer, GColorFromHEX(background_color));
+  }
+
   // Set date
   text_layer_set_text(s_date_layer, s_last_date);
 
@@ -187,30 +191,18 @@ static void update_proc(Layer *layer, GContext *ctx) {
   // White clockface
   graphics_context_set_fill_color(ctx, GColorWhite);
 
-  // Create first block
-  graphics_context_set_fill_color(ctx, GColorBlack);
-  graphics_context_set_stroke_color(ctx, GColorBlack);
-  graphics_fill_rect(ctx, block1, 0, GCornerNone);
-  graphics_draw_rect(ctx, block1);
-
-  // Create second block
-  graphics_context_set_fill_color(ctx, GColorLightGray);
-  graphics_context_set_stroke_color(ctx, GColorLightGray);
-  graphics_fill_rect(ctx, block2, 0, GCornerNone);
-  graphics_draw_rect(ctx, block2);
-
   // Create time divider
   graphics_context_set_fill_color(ctx, GColorBlack);
   graphics_fill_rect(ctx, divider, 0, GCornerNone);
   graphics_context_set_stroke_color(ctx, GColorBlack);
   graphics_draw_rect(ctx, divider);
 
-  for (int i = 0; i < bounds.size.w; i++) {
+  for (int i = 15; i < bounds.size.w - 15; i++) {
     if (i % 4 == 0) {
       GRect pixel = GRect(i, 49, 2, 2);
 
-      graphics_context_set_fill_color(ctx, GColorWhite);
-      graphics_context_set_stroke_color(ctx, GColorWhite);
+      graphics_context_set_fill_color(ctx, GColorDarkGray);
+      graphics_context_set_stroke_color(ctx, GColorDarkGray);
       graphics_fill_rect(ctx, pixel, 0, GCornerNone);
       graphics_draw_rect(ctx, pixel);
 
@@ -254,21 +246,21 @@ static void window_load(Window *window) {
 
   // Create date Layer
   s_date_layer = text_layer_create(
-      GRect(0, PBL_IF_ROUND_ELSE(10, 10), window_bounds.size.w, 28));
+      GRect(15, PBL_IF_ROUND_ELSE(10, 10), window_bounds.size.w, 28));
 
   // Style the date text
   text_layer_set_background_color(s_date_layer, GColorClear);
-  text_layer_set_text_color(s_date_layer, GColorWhite);
-  text_layer_set_text_alignment(s_date_layer, GTextAlignmentCenter);
+  text_layer_set_text_color(s_date_layer, GColorBlueMoon);
+  text_layer_set_text_alignment(s_date_layer, GTextAlignmentLeft); 
 
   // Create weather icon Layer
   s_weather_layer = text_layer_create(
-      GRect(0, PBL_IF_ROUND_ELSE(60, 60), window_bounds.size.w, 28));
+      GRect(15, PBL_IF_ROUND_ELSE(60, 60), window_bounds.size.w, 28)); //&#176
 
   // Style the icon
   text_layer_set_background_color(s_weather_layer, GColorClear);
   text_layer_set_text_color(s_weather_layer, GColorBlack);
-  text_layer_set_text_alignment(s_weather_layer, GTextAlignmentCenter);
+  text_layer_set_text_alignment(s_weather_layer, GTextAlignmentLeft);
 
   // Set fonts
   s_time_font = fonts_load_custom_font(
