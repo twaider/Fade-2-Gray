@@ -172,7 +172,7 @@ static void update_proc(Layer *layer, GContext *ctx) {
   GRect bounds = layer_get_bounds(layer);
   GRect block1 = GRect(0, 0, bounds.size.w, 50);
   GRect block2 = GRect(0, 50, bounds.size.w, 50);
-  GRect divider = GRect(bounds.size.w / 2 - 4, 146, 6, 6);
+  GRect divider = GRect(bounds.size.w / 2 - 4, 148, 6, 6);
   GRect battery_bg = GRect(bounds.size.w / 3, 148, bounds.size.w / 3, 50);
 
   graphics_context_set_antialiased(ctx, ANTIALIASING);
@@ -238,10 +238,10 @@ static void window_load(Window *window) {
 
   // Create time Layer
   s_hour_layer = text_layer_create(
-      GRect(0, PBL_IF_ROUND_ELSE(100, 100), window_bounds.size.w / 2 - 5, 55));
+      GRect(0, PBL_IF_ROUND_ELSE(100, 96), window_bounds.size.w / 2 - 5, 60));
   s_minute_layer = text_layer_create(GRect(window_bounds.size.w / 2 + 10,
-                                           PBL_IF_ROUND_ELSE(100, 100),
-                                           window_bounds.size.w / 2 - 5, 55));
+                                           PBL_IF_ROUND_ELSE(100, 96),
+                                           window_bounds.size.w / 2 - 5, 60));
 
   // Style the time text
   text_layer_set_background_color(s_hour_layer, GColorClear);
@@ -272,7 +272,7 @@ static void window_load(Window *window) {
 
   // Set fonts
   s_time_font = fonts_load_custom_font(
-      resource_get_handle(RESOURCE_ID_FONT_PIXEL_MIL_52));
+      resource_get_handle(RESOURCE_ID_FONT_PIXEL_MIL_58));
   s_weather_font = fonts_load_custom_font(
       resource_get_handle(RESOURCE_ID_FONT_PIXEL_MIL_24));
 

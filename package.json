@@ -1,7 +1,7 @@
 {
     "author": "twaider",
     "dependencies": {
-        "pebble-clay": "^1.0.1"
+        "pebble-clay": "^1.0.2"
     },
     "keywords": [
         "pebble-app"
@@ -37,7 +37,7 @@
                 {
                     "characterRegex": "[0-9:]",
                     "file": "fonts/pixelmil",
-                    "name": "FONT_PIXEL_MIL_52",
+                    "name": "FONT_PIXEL_MIL_58",
                     "targetPlatforms": null,
                     "type": "font"
                 },
@@ -60,7 +60,8 @@
         "targetPlatforms": [
             "aplite",
             "basalt",
-            "chalk"
+            "chalk",
+            "diorite"
         ],
         "uuid": "0508f145-4275-4d9b-8f5c-918c73594637",
         "watchapp": {
