@@ -13,18 +13,12 @@ typedef struct {
 
 static Window *s_main_window;
 static Layer *s_canvas_layer;
-static TextLayer *s_weather_layer;
-static TextLayer *s_date_layer;
-static TextLayer *s_hour_layer;
-static TextLayer *s_minute_layer;
+static TextLayer *s_weather_layer,*s_icon_layer,*s_date_layer,*s_hour_layer,*s_minute_layer;
 
-static GFont s_weather_font;
-static GFont s_time_font;
+static GFont s_weather_font, s_time_font, s_icon_font;
 
 static GPoint s_center;
-static char s_last_hour[8];
-static char s_last_minute[8];
-static char s_last_date[16];
+static char s_last_hour[8],s_last_minute[8],s_last_date[16];
 static int background_color;
 
 static bool weather_units_conf = false;
@@ -188,8 +182,8 @@ static void update_proc(Layer *layer, GContext *ctx) {
   graphics_context_set_fill_color(ctx, GColorWhite);
 
   // Create first block
-  graphics_context_set_fill_color(ctx, GColorBlack);
-  graphics_context_set_stroke_color(ctx, GColorBlack);
+  graphics_context_set_fill_color(ctx, GColorDarkGray);
+  graphics_context_set_stroke_color(ctx, GColorDarkGray);
   graphics_fill_rect(ctx, block1, 0, GCornerNone);
   graphics_draw_rect(ctx, block1);
 
@@ -275,6 +269,8 @@ static void window_load(Window *window) {
       resource_get_handle(RESOURCE_ID_FONT_PIXEL_MIL_58));
   s_weather_font = fonts_load_custom_font(
       resource_get_handle(RESOURCE_ID_FONT_PIXEL_MIL_24));
+  s_icon_font = fonts_load_custom_font(
+      resource_get_handle(RESOURCE_ID_ICON_FONT_24));
 
   text_layer_set_font(s_hour_layer, s_time_font);
   text_layer_set_font(s_minute_layer, s_time_font);

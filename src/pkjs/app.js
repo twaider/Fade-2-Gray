@@ -7,7 +7,7 @@ var clay = new Clay(clayConfig);
 var messageKeys = require('message_keys');
 
 var myAPIKey = '650dbfc7d1348533fdd7f1ecae2d03ca';
-var ICONS = {
+var ICONS1 = {
    "01d": "{ }",
    "02d": "#",
    "03d": "##",
@@ -27,6 +27,28 @@ var ICONS = {
    "13n": "***",
    "50n": "===",
 };
+
+var ICONS = {
+  '01d': 'a',
+  '02d': 'b',
+  '03d': 'c',
+  '04d': 'd',
+  '09d': 'e',
+  '10d': 'f',
+  '11d': 'g',
+  '13d': 'h',
+  '50d': 'i',
+  '01n': 'a',
+  '02n': 'b',
+  '03n': 'c',
+  '04n': 'd',
+  '09n': 'e',
+  '10n': 'f',
+  '11n': 'g',
+  '13n': 'h',
+  '50n': 'i',
+};
+
 
 function parseIcon ( icon ) {
    return ICONS[icon];
