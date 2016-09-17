@@ -23,8 +23,14 @@ module.exports = [
       {
         "type": "color",
         "messageKey": "BACKGROUND_COLOR",
-        "defaultValue": "0xFF0000",
+        "defaultValue": "0x555555",
         "label": "Background Color"
+      },
+      {
+        "type": "color",
+        "messageKey": "BACKGROUND_COLOR_2",
+        "defaultValue": "0xAAAAAA",
+        "label": "Background Color 2"
       }
     ]
   },

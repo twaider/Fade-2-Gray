@@ -19,12 +19,9 @@ static GFont s_weather_font, s_time_font, s_icon_font;
 
 static GPoint s_center;
 static char s_last_hour[8],s_last_minute[8],s_last_date[16];
-static int background_color;
+static int background_color, background_color_2;
 
-static bool weather_units_conf = false;
-static bool weather_safemode_conf = true;
-static bool weather_on_conf = false;
-static bool background_on_conf = false;
+static bool weather_units_conf = false, weather_safemode_conf = true, weather_on_conf = false, background_on_conf = false;
 
 /*************************** appMessage **************************/
 
@@ -44,6 +41,8 @@ static void inbox_received_callback(DictionaryIterator *iterator,
   Tuple *icon_tuple = dict_find(iterator, MESSAGE_KEY_ICON);
   Tuple *background_color_tuple =
       dict_find(iterator, MESSAGE_KEY_BACKGROUND_COLOR);
+  Tuple *background_color_2_tuple =
+      dict_find(iterator, MESSAGE_KEY_BACKGROUND_COLOR_2);
   Tuple *background_on_tuple = dict_find(iterator, MESSAGE_KEY_BACKGROUND_ON);
 
   // If we get weather option
@@ -76,39 +75,41 @@ static void inbox_received_callback(DictionaryIterator *iterator,
                temperature);
     }
 
-    snprintf(icon_buffer, sizeof(icon_buffer), "%s %s",
-             icon_tuple->value->cstring, temperature_buffer);
+    snprintf(icon_buffer, sizeof(icon_buffer), "%s",
+             icon_tuple->value->cstring);
 
     // Set temp and icon to text layers
-    text_layer_set_text(s_weather_layer, icon_buffer);
+    text_layer_set_text(s_weather_layer, temperature_buffer);
+    text_layer_set_text(s_icon_layer, icon_buffer);
   }
 
   // If weather disabled, clear weather layers
   if (!weather_on_conf) {
     text_layer_set_text(s_weather_layer, "");
+    text_layer_set_text(s_icon_layer, "");
   }
 
   // If background color and enabled
-  if (background_color_tuple && background_on_tuple) {
+  if (background_color_tuple && background_color_2_tuple && background_on_tuple) {
     // Set background on/off
     background_on_conf = (bool)background_on_tuple->value->int16;
     persist_write_bool(MESSAGE_KEY_BACKGROUND_ON, background_on_conf);
     // Set background color if enabled, otherwise we load the default one - red
     background_color = background_on_conf
                            ? (int)background_color_tuple->value->int32
-                           : 0xFF0000;
+                           : 0xAAAAAA;
     persist_write_int(MESSAGE_KEY_BACKGROUND_COLOR, background_color);
+    
+    background_color_2 = background_on_conf
+                           ? (int)background_color_2_tuple->value->int32
+                           : 0x555555;
+    persist_write_int(MESSAGE_KEY_BACKGROUND_COLOR_2, background_color_2);
 
     // Redraw
     if (s_canvas_layer) {
       layer_mark_dirty(s_canvas_layer);
     }
   }
-
-  APP_LOG(APP_LOG_LEVEL_DEBUG, "weather_units_conf %d", weather_units_conf);
-  APP_LOG(APP_LOG_LEVEL_DEBUG, "weather_on_conf %d", weather_on_conf);
-  APP_LOG(APP_LOG_LEVEL_DEBUG, "background_on_conf %d", background_on_conf);
-  APP_LOG(APP_LOG_LEVEL_DEBUG, "background_color %d", background_color);
 }
 
 static void inbox_dropped_callback(AppMessageResult reason, void *context) {
@@ -167,7 +168,6 @@ static void update_proc(Layer *layer, GContext *ctx) {
   GRect block1 = GRect(0, 0, bounds.size.w, 50);
   GRect block2 = GRect(0, 50, bounds.size.w, 50);
   GRect divider = GRect(bounds.size.w / 2 - 4, 148, 6, 6);
-  GRect battery_bg = GRect(bounds.size.w / 3, 148, bounds.size.w / 3, 50);
 
   graphics_context_set_antialiased(ctx, ANTIALIASING);
 
@@ -182,14 +182,14 @@ static void update_proc(Layer *layer, GContext *ctx) {
   graphics_context_set_fill_color(ctx, GColorWhite);
 
   // Create first block
-  graphics_context_set_fill_color(ctx, GColorDarkGray);
-  graphics_context_set_stroke_color(ctx, GColorDarkGray);
+  graphics_context_set_fill_color(ctx, GColorFromHEX(background_color));
+  graphics_context_set_stroke_color(ctx, GColorFromHEX(background_color));
   graphics_fill_rect(ctx, block1, 0, GCornerNone);
   graphics_draw_rect(ctx, block1);
-
+  
   // Create second block
-  graphics_context_set_fill_color(ctx, GColorLightGray);
-  graphics_context_set_stroke_color(ctx, GColorLightGray);
+  graphics_context_set_fill_color(ctx, GColorFromHEX(background_color_2));
+  graphics_context_set_stroke_color(ctx, GColorFromHEX(background_color_2));
   graphics_fill_rect(ctx, block2, 0, GCornerNone);
   graphics_draw_rect(ctx, block2);
 
@@ -210,8 +210,8 @@ static void update_proc(Layer *layer, GContext *ctx) {
 
       GRect pixel2 = GRect(i, 100, 2, 2);
 
-      graphics_context_set_fill_color(ctx, GColorDarkGray);
-      graphics_context_set_stroke_color(ctx, GColorDarkGray);
+      graphics_context_set_fill_color(ctx, GColorFromHEX(background_color_2));
+      graphics_context_set_stroke_color(ctx, GColorFromHEX(background_color_2));
       graphics_fill_rect(ctx, pixel2, 0, GCornerNone);
       graphics_draw_rect(ctx, pixel2);
     }
@@ -255,14 +255,23 @@ static void window_load(Window *window) {
   text_layer_set_text_color(s_date_layer, GColorWhite);
   text_layer_set_text_alignment(s_date_layer, GTextAlignmentCenter);
 
-  // Create weather icon Layer
+  // Create weather Layer
   s_weather_layer = text_layer_create(
-      GRect(0, PBL_IF_ROUND_ELSE(60, 60), window_bounds.size.w, 28));
+      GRect(window_bounds.size.w / 2 - 5, PBL_IF_ROUND_ELSE(60, 60), window_bounds.size.w / 2, 28));
 
-  // Style the icon
+  // Style the weather Layer
   text_layer_set_background_color(s_weather_layer, GColorClear);
   text_layer_set_text_color(s_weather_layer, GColorBlack);
-  text_layer_set_text_alignment(s_weather_layer, GTextAlignmentCenter);
+  text_layer_set_text_alignment(s_weather_layer, GTextAlignmentLeft);
+  
+  // Create weather icon Layer
+  s_icon_layer = text_layer_create(
+      GRect(0, PBL_IF_ROUND_ELSE(60, 64), window_bounds.size.w / 2 - 15, 28));
+
+  // Style the icon
+  text_layer_set_background_color(s_icon_layer, GColorClear);
+  text_layer_set_text_color(s_icon_layer, GColorBlack);
+  text_layer_set_text_alignment(s_icon_layer, GTextAlignmentRight);
 
   // Set fonts
   s_time_font = fonts_load_custom_font(
@@ -276,6 +285,7 @@ static void window_load(Window *window) {
   text_layer_set_font(s_minute_layer, s_time_font);
   text_layer_set_font(s_date_layer, s_weather_font);
   text_layer_set_font(s_weather_layer, s_weather_font);
+  text_layer_set_font(s_icon_layer, s_icon_font);
 
   // Add layers
   layer_add_child(window_get_root_layer(window),
@@ -286,6 +296,8 @@ static void window_load(Window *window) {
                   text_layer_get_layer(s_date_layer));
   layer_add_child(window_get_root_layer(window),
                   text_layer_get_layer(s_weather_layer));
+  layer_add_child(window_get_root_layer(window),
+                  text_layer_get_layer(s_icon_layer));
 }
 
 static void window_unload(Window *window) {
@@ -295,8 +307,10 @@ static void window_unload(Window *window) {
   text_layer_destroy(s_minute_layer);
   text_layer_destroy(s_date_layer);
   text_layer_destroy(s_weather_layer);
+  text_layer_destroy(s_icon_layer);
   fonts_unload_custom_font(s_weather_font);
   fonts_unload_custom_font(s_time_font);
+  fonts_unload_custom_font(s_icon_font);
 }
 
 /*********************************** App **************************************/
@@ -324,7 +338,11 @@ static void init() {
                            : false;
   background_color = persist_exists(MESSAGE_KEY_BACKGROUND_COLOR)
                          ? persist_read_int(MESSAGE_KEY_BACKGROUND_COLOR)
-                         : 0xFF0000;
+                         : 0x555555;
+  
+  background_color_2 = persist_exists(MESSAGE_KEY_BACKGROUND_COLOR_2)
+                         ? persist_read_int(MESSAGE_KEY_BACKGROUND_COLOR_2)
+                         : 0xAAAAAA;
 
   window_set_window_handlers(s_main_window,
                              (WindowHandlers){

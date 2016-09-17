@@ -22,23 +22,29 @@
             "WEATHER_ON",
             "BACKGROUND_ON",
             "LOCATION",
-            "WEATHER_SAFEMODE"
+            "WEATHER_SAFEMODE",
+            "BACKGROUND_COLOR_2"
         ],
         "projectType": "native",
         "resources": {
             "media": [
                 {
+                    "file": "images/fade2gray-icon-28x28.png",
+                    "name": "MENU_ICON",
+                    "targetPlatforms": [
+                        "aplite",
+                        "basalt",
+                        "chalk",
+                        "diorite"
+                    ],
+                    "type": "png"
+                },
+                {
+                    "characterRegex": "[a-z]",
                     "file": "fonts/weather_font",
                     "name": "ICON_FONT_24",
                     "targetPlatforms": null,
                     "type": "font"
-                },
-                {
-                    "file": "images/ks_menu.png",
-                    "menuIcon": true,
-                    "name": "IMAGE_MENU",
-                    "targetPlatforms": null,
-                    "type": "png"
                 },
                 {
                     "file": "fonts/pixelmil",
@@ -50,13 +56,6 @@
                     "characterRegex": "[0-9:]",
                     "file": "fonts/pixelmil",
                     "name": "FONT_PIXEL_MIL_58",
-                    "targetPlatforms": null,
-                    "type": "font"
-                },
-                {
-                    "characterRegex": "[0-9:\u00b0a-izA-IZ\\-]",
-                    "file": "fonts/nupe.ttf",
-                    "name": "FONT_NUPE_23",
                     "targetPlatforms": null,
                     "type": "font"
                 }
@@ -74,5 +73,5 @@
             "watchface": true
         }
     },
-    "version": "1.0.0"
+    "version": "2.0.0"
 }
