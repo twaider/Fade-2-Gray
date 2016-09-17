@@ -32,6 +32,9 @@ static bool weather_safemode_conf = true;
 static bool weather_on_conf = false;
 static bool background_on_conf = false;
 
+static BitmapLayer *s_image_layer;
+static GBitmap *s_01d, *s_02d;
+
 /*************************** appMessage **************************/
 
 static void inbox_received_callback(DictionaryIterator *iterator,
@@ -82,8 +85,8 @@ static void inbox_received_callback(DictionaryIterator *iterator,
                temperature);
     }
 
-    snprintf(icon_buffer, sizeof(icon_buffer), "%s %s",
-             icon_tuple->value->cstring, temperature_buffer);
+    snprintf(icon_buffer, sizeof(icon_buffer), "%s",
+              temperature_buffer);
 
     // Set temp and icon to text layers
     text_layer_set_text(s_weather_layer, icon_buffer);
@@ -173,7 +176,6 @@ static void update_proc(Layer *layer, GContext *ctx) {
   GRect block1 = GRect(0, 0, bounds.size.w, 50);
   GRect block2 = GRect(0, 50, bounds.size.w, 50);
   GRect divider = GRect(bounds.size.w / 2 - 4, 148, 6, 6);
-  GRect battery_bg = GRect(bounds.size.w / 3, 148, bounds.size.w / 3, 50);
 
   graphics_context_set_antialiased(ctx, ANTIALIASING);
 
@@ -188,16 +190,32 @@ static void update_proc(Layer *layer, GContext *ctx) {
   graphics_context_set_fill_color(ctx, GColorWhite);
 
   // Create first block
-  graphics_context_set_fill_color(ctx, GColorBlack);
-  graphics_context_set_stroke_color(ctx, GColorBlack);
-  graphics_fill_rect(ctx, block1, 0, GCornerNone);
-  graphics_draw_rect(ctx, block1);
-
-  // Create second block
   graphics_context_set_fill_color(ctx, GColorLightGray);
   graphics_context_set_stroke_color(ctx, GColorLightGray);
+  graphics_fill_rect(ctx, block1, 0, GCornerNone);
+  graphics_draw_rect(ctx, block1);
+  
+  //if (weather_on_conf) {
+   // bitmap_layer_set_bitmap(s_image_layer, s_01d);
+  //} else {
+   // bitmap_layer_set_bitmap(s_image_layer, s_02d);
+  //}  
+  
+  // Create second block
+  graphics_context_set_fill_color(ctx, GColorWhite);
+  graphics_context_set_stroke_color(ctx, GColorWhite);
   graphics_fill_rect(ctx, block2, 0, GCornerNone);
   graphics_draw_rect(ctx, block2);
+  
+  // Get the bounds of the image
+  GRect bitmap_bounds = gbitmap_get_bounds(s_01d);
+  GRect bitmap_layer = GRect(0, 50, bitmap_bounds.size.w, bitmap_bounds.size.h);
+
+  // Set the compositing mode (GCompOpSet is required for transparency)
+  graphics_context_set_compositing_mode(ctx, GCompOpSet);
+
+  // Draw the image
+  graphics_draw_bitmap_in_rect(ctx, s_01d, bitmap_layer);
 
   // Create time divider
   graphics_context_set_fill_color(ctx, GColorBlack);
@@ -209,8 +227,8 @@ static void update_proc(Layer *layer, GContext *ctx) {
     if (i % 4 == 0) {
       GRect pixel = GRect(i, 49, 2, 2);
 
-      graphics_context_set_fill_color(ctx, GColorWhite);
-      graphics_context_set_stroke_color(ctx, GColorWhite);
+      graphics_context_set_fill_color(ctx, GColorDarkGray);
+      graphics_context_set_stroke_color(ctx, GColorDarkGray);
       graphics_fill_rect(ctx, pixel, 0, GCornerNone);
       graphics_draw_rect(ctx, pixel);
 
@@ -235,6 +253,12 @@ static void window_load(Window *window) {
   layer_set_update_proc(s_canvas_layer, update_proc);
 
   layer_add_child(window_layer, s_canvas_layer);
+  
+  s_01d = gbitmap_create_with_resource(RESOURCE_ID_01_D);
+  s_02d = gbitmap_create_with_resource(RESOURCE_ID_02_D);
+  
+  //s_image_layer = bitmap_layer_create(window_bounds);  
+  //layer_add_child(window_layer, bitmap_layer_get_layer(s_image_layer));
 
   // Create time Layer
   s_hour_layer = text_layer_create(
@@ -258,17 +282,17 @@ static void window_load(Window *window) {
 
   // Style the date text
   text_layer_set_background_color(s_date_layer, GColorClear);
-  text_layer_set_text_color(s_date_layer, GColorWhite);
+  text_layer_set_text_color(s_date_layer, GColorBlack);
   text_layer_set_text_alignment(s_date_layer, GTextAlignmentCenter);
 
   // Create weather icon Layer
   s_weather_layer = text_layer_create(
-      GRect(0, PBL_IF_ROUND_ELSE(60, 60), window_bounds.size.w, 28));
+      GRect(0, PBL_IF_ROUND_ELSE(60, 60), window_bounds.size.w- 8, 28));
 
   // Style the icon
   text_layer_set_background_color(s_weather_layer, GColorClear);
   text_layer_set_text_color(s_weather_layer, GColorBlack);
-  text_layer_set_text_alignment(s_weather_layer, GTextAlignmentCenter);
+  text_layer_set_text_alignment(s_weather_layer, GTextAlignmentRight);
 
   // Set fonts
   s_time_font = fonts_load_custom_font(
@@ -301,6 +325,7 @@ static void window_unload(Window *window) {
   text_layer_destroy(s_weather_layer);
   fonts_unload_custom_font(s_weather_font);
   fonts_unload_custom_font(s_time_font);
+  gbitmap_destroy(s_01d);
 }
 
 /*********************************** App **************************************/
